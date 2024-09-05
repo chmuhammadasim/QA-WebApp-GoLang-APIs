@@ -18,10 +18,19 @@ func InitRoutes() *mux.Router {
 	api := router.PathPrefix("/api").Subrouter()
 	api.Use(middleware.AuthMiddleware)
 
-	api.HandleFunc("/questions", controllers.CreateQuestion).Methods("POST")
-	api.HandleFunc("/questions", controllers.GetAllQuestions).Methods("GET")
-	api.HandleFunc("/questions/{id}", controllers.UpdateQuestion).Methods("PUT")
-	api.HandleFunc("/questions/{id}", controllers.DeleteQuestion).Methods("DELETE")
+	// Admin routes (only accessible by admin role)
+	adminRoutes := api.PathPrefix("/admin").Subrouter()
+	adminRoutes.Use(middleware.RoleMiddleware("admin"))
+
+	adminRoutes.HandleFunc("/questions", controllers.CreateQuestion).Methods("POST")
+	adminRoutes.HandleFunc("/questions/{id}", controllers.UpdateQuestion).Methods("PUT")
+	adminRoutes.HandleFunc("/questions/{id}", controllers.DeleteQuestion).Methods("DELETE")
+
+	// User routes (accessible by user role)
+	userRoutes := api.PathPrefix("/user").Subrouter()
+	userRoutes.Use(middleware.RoleMiddleware("user"))
+
+	userRoutes.HandleFunc("/questions", controllers.GetAllQuestions).Methods("GET")
 
 	return router
 }
