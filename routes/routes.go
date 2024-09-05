@@ -20,6 +20,8 @@ func InitRoutes() *mux.Router {
 
 	api.HandleFunc("/questions", controllers.CreateQuestion).Methods("POST")
 	api.HandleFunc("/questions", controllers.GetAllQuestions).Methods("GET")
+	api.HandleFunc("/questions/{id}", controllers.UpdateQuestion).Methods("PUT")
+	api.HandleFunc("/questions/{id}", controllers.DeleteQuestion).Methods("DELETE")
 
 	return router
 }
